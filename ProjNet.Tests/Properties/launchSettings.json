@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ProjNET.Tests": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files (x86)\\NUnit 2.6.4\\bin\\nunit.exe"
+    }
+  }
+}
