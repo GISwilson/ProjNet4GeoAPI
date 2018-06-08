@@ -187,3 +187,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 /packages
 /ProjNET.Pcl/IO/CoordinateSystems/MathTransformWktReader.cs
+/ConsoleApp1
