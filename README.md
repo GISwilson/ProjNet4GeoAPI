@@ -35,5 +35,6 @@ Join the [![Gitter](https://img.shields.io/gitter/room/TechnologyAdvice/Stardust
 * ObliqueStereographic
 * Polyconic
 * Transverse Mercator
+* Gauss Kruger
  
 
