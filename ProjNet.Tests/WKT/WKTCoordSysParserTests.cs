@@ -323,5 +323,103 @@ namespace ProjNet.UnitTests.Converters.WKT
             Assert.AreEqual ("EPSG", fcs.BaseCoordinateSystem.Authority);
             Assert.AreEqual (31467, fcs.BaseCoordinateSystem.AuthorityCode);
         }
+
+        [Test]
+        public void ParseGcsWkt()
+        {
+            CoordinateSystemFactory fac = new CoordinateSystemFactory();
+            IGeographicCoordinateSystem gcs = null;
+            string wkt = "GEOGCS[\"GCS_Xian_1980\",DATUM[\"D_Xian_1980\",SPHEROID[\"Xian_1980\",6378140.0,298.257]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]";
+
+            try
+            {
+                gcs = fac.CreateFromWkt(wkt) as IGeographicCoordinateSystem;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Could not create fitted coordinate system from:\r\n" + wkt + "\r\n" + ex.Message);
+            }
+
+            Assert.IsNotNull(gcs);
+
+            Assert.AreEqual("GCS_Xian_1980", gcs.Name);
+            Assert.AreEqual("D_Xian_1980", gcs.HorizontalDatum.Name);
+            Assert.AreEqual("Xian_1980", gcs.HorizontalDatum.Ellipsoid.Name);
+            Assert.AreEqual(6378140, gcs.HorizontalDatum.Ellipsoid.SemiMajorAxis);
+            Assert.AreEqual(298.257, gcs.HorizontalDatum.Ellipsoid.InverseFlattening);
+            Assert.AreEqual("Greenwich", gcs.PrimeMeridian.Name);
+            Assert.AreEqual(0, gcs.PrimeMeridian.Longitude);
+            Assert.AreEqual("Degree", gcs.AngularUnit.Name);
+            Assert.AreEqual(0.0174532925199433, gcs.AngularUnit.RadiansPerUnit);
+        }
+
+        [Test]
+        public void ParsePcsWkt()
+        {
+            CoordinateSystemFactory fac = new CoordinateSystemFactory();
+            IProjectedCoordinateSystem pcs = null;
+            string wkt = "PROJCS[\"CGCS2000_3_Degree_GK_CM_111E\"," +
+                         "GEOGCS[\"GCS_China_Geodetic_Coordinate_System_2000\"," +
+                         "DATUM[\"D_China_2000\"," +
+                         "SPHEROID[\"CGCS2000\",6378137.0,298.257222101]]," +
+                         "PRIMEM[\"Greenwich\",0.0]," +
+                         "UNIT[\"Degree\",0.0174532925199433]]," +
+                         "PROJECTION[\"Gauss_Kruger\"]," +
+                         "PARAMETER[\"False_Easting\",500000.0]," +
+                         "PARAMETER[\"False_Northing\",0.0]," +
+                         "PARAMETER[\"Central_Meridian\",111.0]," +
+                         "PARAMETER[\"Scale_Factor\",1.0]," +
+                         "PARAMETER[\"Latitude_Of_Origin\",0.0]," +
+                         "UNIT[\"Meter\",1.0]," +
+                         "AUTHORITY[\"EPSG\",4546]]";
+
+            try
+            {
+                pcs = fac.CreateFromWkt(wkt) as IProjectedCoordinateSystem;
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Could not create fitted coordinate system from:\r\n" + wkt + "\r\n" + ex.Message);
+            }
+
+            Assert.IsNotNull(pcs);
+
+            Assert.AreEqual("CGCS2000_3_Degree_GK_CM_111E", pcs.Name);
+            Assert.AreEqual("GCS_China_Geodetic_Coordinate_System_2000", pcs.GeographicCoordinateSystem.Name);
+            Assert.AreEqual("D_China_2000", pcs.HorizontalDatum.Name);
+            Assert.AreEqual("CGCS2000", pcs.HorizontalDatum.Ellipsoid.Name);
+            Assert.AreEqual(6378137.0, pcs.GeographicCoordinateSystem.HorizontalDatum.Ellipsoid.SemiMajorAxis);
+            Assert.AreEqual(298.257222101, pcs.GeographicCoordinateSystem.HorizontalDatum.Ellipsoid.InverseFlattening);
+            Assert.AreEqual("Greenwich", pcs.GeographicCoordinateSystem.PrimeMeridian.Name);
+            Assert.AreEqual(0, pcs.GeographicCoordinateSystem.PrimeMeridian.Longitude);
+            Assert.AreEqual("Degree", pcs.GeographicCoordinateSystem.AngularUnit.Name);
+            Assert.AreEqual(0.0174532925199433, pcs.GeographicCoordinateSystem.AngularUnit.RadiansPerUnit);
+
+            Assert.AreEqual("Gauss_Kruger", pcs.Projection.ClassName, "Projection Classname");
+
+            ProjectionParameter latitude_of_origin = pcs.Projection.GetParameter("latitude_of_origin");
+            Assert.IsNotNull(latitude_of_origin);
+            Assert.AreEqual(0, latitude_of_origin.Value);
+            ProjectionParameter central_meridian = pcs.Projection.GetParameter("central_meridian");
+            Assert.IsNotNull(central_meridian);
+            Assert.AreEqual(111, central_meridian.Value);
+            ProjectionParameter scale_factor = pcs.Projection.GetParameter("scale_factor");
+            Assert.IsNotNull(scale_factor);
+            Assert.AreEqual(1, scale_factor.Value);
+            ProjectionParameter false_easting = pcs.Projection.GetParameter("false_easting");
+            Assert.IsNotNull(false_easting);
+            Assert.AreEqual(500000, false_easting.Value);
+            ProjectionParameter false_northing = pcs.Projection.GetParameter("false_northing");
+            Assert.IsNotNull(false_northing);
+            Assert.AreEqual(0, false_northing.Value);
+
+            Assert.AreEqual("Meter", pcs.LinearUnit.Name);
+            Assert.AreEqual(1, pcs.LinearUnit.MetersPerUnit);
+            Assert.AreEqual("EPSG", pcs.Authority);
+            Assert.AreEqual(4546, pcs.AuthorityCode);
+
+            //string newWkt = pcs.WKT.Replace(", ", ",");
+            //Assert.AreEqual(wkt, newWkt);
+        }
     }
 }

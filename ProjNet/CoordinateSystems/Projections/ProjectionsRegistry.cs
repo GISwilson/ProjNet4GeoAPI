@@ -45,6 +45,7 @@ namespace ProjNet.CoordinateSystems.Projections
             Register("hotine_oblique_mercator", typeof(HotineObliqueMercatorProjection));
             Register("oblique_mercator", typeof(ObliqueMercatorProjection));
             Register("oblique_stereographic", typeof(ObliqueStereographicProjection));
+            Register("gauss_kruger", typeof(GaussKruger));
         }
 
         /// <summary>

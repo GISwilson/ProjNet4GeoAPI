@@ -341,7 +341,147 @@ namespace ProjNet.UnitTests
 
 		}
 
-		[Test]
+        [Test]
+        public void TestGaussKruger_3_Zone_Projection()
+        {
+
+            IEllipsoid ellipsoid = /*CGCS2000;*/
+                CoordinateSystemFactory.CreateFlattenedSphere("CGCS2000", 6378137.0, 298.257222101, LinearUnit.Metre);
+
+            IHorizontalDatum datum = CoordinateSystemFactory.CreateHorizontalDatum("CGCS2000", DatumType.HD_Geocentric, ellipsoid, null);
+            IGeographicCoordinateSystem gcs = CoordinateSystemFactory.CreateGeographicCoordinateSystem("CGCS2000", AngularUnit.Degrees, datum,
+                PrimeMeridian.Greenwich, new AxisInfo("Lon", AxisOrientationEnum.East),
+                new AxisInfo("Lat", AxisOrientationEnum.North));
+            List<ProjectionParameter> parameters = new List<ProjectionParameter>(5)
+                                 {
+                                     new ProjectionParameter("latitude_of_origin", 0.0),
+                                     new ProjectionParameter("central_meridian", 111.0),
+                                     new ProjectionParameter("scale_Factor", 1.0),
+                                     new ProjectionParameter("false_easting", 37500000.0),
+                                     new ProjectionParameter("false_northing", 0.0)
+                                 };
+            IProjection projection = CoordinateSystemFactory.CreateProjection("GaussKruger", "gauss_kruger", parameters);
+
+            IProjectedCoordinateSystem coordsys = CoordinateSystemFactory.CreateProjectedCoordinateSystem("CGCS2000_3_Degree_GK_Zone_37", gcs, projection, LinearUnit.Metre, new AxisInfo("East", AxisOrientationEnum.East), new AxisInfo("North", AxisOrientationEnum.North));
+
+            ICoordinateTransformation trans = CoordinateTransformationFactory.CreateFromCoordinateSystems(gcs, coordsys);
+
+            double[] pGeo = new[] { 110.500907402377, 40.828211126812 };
+            double[] pMeter = trans.MathTransform.Transform(pGeo);
+            double[] pGeo2 = trans.MathTransform.Inverse().Transform(pMeter);
+
+            double[] expected = new[] { 37457899.83723928, 4521615.6339953011 };
+            Assert.IsTrue(ToleranceLessThan(pMeter, expected, 0.05), TransformationError("GaussKruger", expected, pMeter));
+            Assert.IsTrue(ToleranceLessThan(pGeo, pGeo2, 0.0000001), TransformationError("GaussKruger", pGeo, pGeo2, true));
+
+        }
+
+        [Test]
+        public void TestGaussKruger_3_WithoutZone_Projection()
+        {
+
+            IEllipsoid ellipsoid = /*CGCS2000;*/
+                CoordinateSystemFactory.CreateFlattenedSphere("CGCS2000", 6378137.0, 298.257222101, LinearUnit.Metre);
+
+            IHorizontalDatum datum = CoordinateSystemFactory.CreateHorizontalDatum("CGCS2000", DatumType.HD_Geocentric, ellipsoid, null);
+            IGeographicCoordinateSystem gcs = CoordinateSystemFactory.CreateGeographicCoordinateSystem("CGCS2000", AngularUnit.Degrees, datum,
+                PrimeMeridian.Greenwich, new AxisInfo("Lon", AxisOrientationEnum.East),
+                new AxisInfo("Lat", AxisOrientationEnum.North));
+            List<ProjectionParameter> parameters = new List<ProjectionParameter>(5)
+                                 {
+                                     new ProjectionParameter("latitude_of_origin", 0.0),
+                                     new ProjectionParameter("central_meridian", 111.0),
+                                     new ProjectionParameter("scale_Factor", 1.0),
+                                     new ProjectionParameter("false_easting", 500000.0),
+                                     new ProjectionParameter("false_northing", 0.0)
+                                 };
+            IProjection projection = CoordinateSystemFactory.CreateProjection("GaussKruger", "gauss_kruger", parameters);
+
+            IProjectedCoordinateSystem coordsys = CoordinateSystemFactory.CreateProjectedCoordinateSystem("CGCS2000_3_Degree_GK_CM_111E", gcs, projection, LinearUnit.Metre, new AxisInfo("East", AxisOrientationEnum.East), new AxisInfo("North", AxisOrientationEnum.North));
+
+            ICoordinateTransformation trans = CoordinateTransformationFactory.CreateFromCoordinateSystems(gcs, coordsys);
+
+            double[] pGeo = new[] { 110.500907402377, 40.828211126812 };
+            double[] pMeter = trans.MathTransform.Transform(pGeo);
+            double[] pGeo2 = trans.MathTransform.Inverse().Transform(pMeter);
+
+            double[] expected = new[] { 457899.83723928, 4521615.6339953011 };
+            Assert.IsTrue(ToleranceLessThan(pMeter, expected, 0.05), TransformationError("GaussKruger", expected, pMeter));
+            Assert.IsTrue(ToleranceLessThan(pGeo, pGeo2, 0.0000001), TransformationError("GaussKruger", pGeo, pGeo2, true));
+
+        }
+
+        [Test]
+        public void TestGaussKruger_6_Zone_Projection()
+        {
+
+            IEllipsoid ellipsoid = /*CGCS2000;*/
+                CoordinateSystemFactory.CreateFlattenedSphere("CGCS2000", 6378137.0, 298.257222101, LinearUnit.Metre);
+
+            IHorizontalDatum datum = CoordinateSystemFactory.CreateHorizontalDatum("CGCS2000", DatumType.HD_Geocentric, ellipsoid, null);
+            IGeographicCoordinateSystem gcs = CoordinateSystemFactory.CreateGeographicCoordinateSystem("CGCS2000", AngularUnit.Degrees, datum,
+                PrimeMeridian.Greenwich, new AxisInfo("Lon", AxisOrientationEnum.East),
+                new AxisInfo("Lat", AxisOrientationEnum.North));
+            List<ProjectionParameter> parameters = new List<ProjectionParameter>(5)
+                                 {
+                                     new ProjectionParameter("latitude_of_origin", 0.0),
+                                     new ProjectionParameter("central_meridian", 111.0),
+                                     new ProjectionParameter("scale_Factor", 1.0),
+                                     new ProjectionParameter("false_easting", 19500000.0),
+                                     new ProjectionParameter("false_northing", 0.0)
+                                 };
+            IProjection projection = CoordinateSystemFactory.CreateProjection("GaussKruger", "gauss_kruger", parameters);
+
+            IProjectedCoordinateSystem coordsys = CoordinateSystemFactory.CreateProjectedCoordinateSystem("CGCS2000_GK_Zone_19", gcs, projection, LinearUnit.Metre, new AxisInfo("East", AxisOrientationEnum.East), new AxisInfo("North", AxisOrientationEnum.North));
+
+            ICoordinateTransformation trans = CoordinateTransformationFactory.CreateFromCoordinateSystems(gcs, coordsys);
+
+            double[] pGeo = new[] { 110.500907402377, 40.828211126812 };
+            double[] pMeter = trans.MathTransform.Transform(pGeo);
+            double[] pGeo2 = trans.MathTransform.Inverse().Transform(pMeter);
+
+            double[] expected = new[] { 19457899.83723928, 4521615.6339953011 };
+            Assert.IsTrue(ToleranceLessThan(pMeter, expected, 0.05), TransformationError("GaussKruger", expected, pMeter));
+            Assert.IsTrue(ToleranceLessThan(pGeo, pGeo2, 0.0000001), TransformationError("GaussKruger", pGeo, pGeo2, true));
+
+        }
+
+        [Test]
+        public void TestGaussKruger_6_WithoutZone_Projection()
+        {
+
+            IEllipsoid ellipsoid = /*CGCS2000;*/
+                CoordinateSystemFactory.CreateFlattenedSphere("CGCS2000", 6378137.0, 298.257222101, LinearUnit.Metre);
+
+            IHorizontalDatum datum = CoordinateSystemFactory.CreateHorizontalDatum("CGCS2000", DatumType.HD_Geocentric, ellipsoid, null);
+            IGeographicCoordinateSystem gcs = CoordinateSystemFactory.CreateGeographicCoordinateSystem("CGCS2000", AngularUnit.Degrees, datum,
+                PrimeMeridian.Greenwich, new AxisInfo("Lon", AxisOrientationEnum.East),
+                new AxisInfo("Lat", AxisOrientationEnum.North));
+            List<ProjectionParameter> parameters = new List<ProjectionParameter>(5)
+                                 {
+                                     new ProjectionParameter("latitude_of_origin", 0.0),
+                                     new ProjectionParameter("central_meridian", 111.0),
+                                     new ProjectionParameter("scale_Factor", 1.0),
+                                     new ProjectionParameter("false_easting", 500000.0),
+                                     new ProjectionParameter("false_northing", 0.0)
+                                 };
+            IProjection projection = CoordinateSystemFactory.CreateProjection("GaussKruger", "gauss_kruger", parameters);
+
+            IProjectedCoordinateSystem coordsys = CoordinateSystemFactory.CreateProjectedCoordinateSystem("CGCS2000_GK_CM_111E", gcs, projection, LinearUnit.Metre, new AxisInfo("East", AxisOrientationEnum.East), new AxisInfo("North", AxisOrientationEnum.North));
+
+            ICoordinateTransformation trans = CoordinateTransformationFactory.CreateFromCoordinateSystems(gcs, coordsys);
+
+            double[] pGeo = new[] { 110.500907402377, 40.828211126812 };
+            double[] pMeter = trans.MathTransform.Transform(pGeo);
+            double[] pGeo2 = trans.MathTransform.Inverse().Transform(pMeter);
+
+            double[] expected = new[] { 457899.83723928, 4521615.6339953011 };
+            Assert.IsTrue(ToleranceLessThan(pMeter, expected, 0.05), TransformationError("GaussKruger", expected, pMeter));
+            Assert.IsTrue(ToleranceLessThan(pGeo, pGeo2, 0.0000001), TransformationError("GaussKruger", pGeo, pGeo2, true));
+
+        }
+
+        [Test]
 		public void TestGeocentric()
 		{
 			IGeographicCoordinateSystem gcs = CoordinateSystemFactory.CreateGeographicCoordinateSystem("ETRF89 Geographic", AngularUnit.Degrees, HorizontalDatum.ETRF89, PrimeMeridian.Greenwich,
@@ -658,7 +798,7 @@ namespace ProjNet.UnitTests
             IGeographicCoordinateSystem csSource = GeographicCoordinateSystem.WGS84;
             ICoordinateSystem csTarget = CoordinateSystemFactory.CreateFromWkt(
                "PROJCS[\"NAD83(NSRS2007) / Alaska zone 1\",GEOGCS[\"NAD83(NSRS2007)\",DATUM[\"NAD83_National_Spatial_Reference_System_2007\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY[\"EPSG\",\"6759\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4759\"]],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],PROJECTION[\"Hotine_Oblique_Mercator\"],PARAMETER[\"latitude_of_center\",57],PARAMETER[\"longitude_of_center\",-133.6666666666667],PARAMETER[\"azimuth\",323.1301023611111],PARAMETER[\"rectified_grid_angle\",323.1301023611111],PARAMETER[\"scale_factor\",0.9999],PARAMETER[\"false_easting\",5000000],PARAMETER[\"false_northing\",-5000000],AUTHORITY[\"EPSG\",\"3468\"],AXIS[\"X\",EAST],AXIS[\"Y\",NORTH]]");
-            //61.216667°, -149.883333°
+            //61.216667? -149.883333?
             //"POINT(4136805.82642057 -4424019.78560519)"
             Test("HotineObliqueMercator", csSource, csTarget,
                  new[] { -149.883333, 61.216667 },
@@ -714,7 +854,7 @@ namespace ProjNet.UnitTests
         [Test]
         public void AffineTransformationTest ()
         {
-            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gauß-Krüger using affine transformation)
+            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gau?Krüger using affine transformation)
             // affine transform
             // 1) Offset: X=-3454886,640m Y=-5479481,278m;
             // 2)Rotation: 332,0657, Rotation point  X=3456926,640m Y=5481071,278m;
@@ -748,7 +888,7 @@ namespace ProjNet.UnitTests
         [Test]
         public void InverseAffineTransformationTest ()
         {
-            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gauß-Krüger using affine transformation)
+            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gau?Krüger using affine transformation)
             // affine transform
             // 1) Offset: X=-3454886,640m Y=-5479481,278m;
             // 2)Rotation: 332,0657, Rotation point  X=3456926,640m Y=5481071,278m;
@@ -799,7 +939,7 @@ namespace ProjNet.UnitTests
         public void TestTransformOnFittedCoordinateSystem ()
         {
 
-            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gauß-Krüger using affine transformation)
+            //Local coordinate system MNAU (Kraftwerk Mäuserich) (based on Gau?Krüger using affine transformation)
             // affine transform
             // 1) Offset: X=-3454886,640m Y=-5479481,278m;
             // 2)Rotation: 332,0657, Rotation point  X=3456926,640m Y=5481071,278m;
